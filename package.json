@@ -1,0 +1,11 @@
+{
+  "name": "event-emitter",
+  "version": "0.1.0",
+  "description": "EventEmitter implementation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zemliakov Konstantin",
+  "license": "ISC"
+}
