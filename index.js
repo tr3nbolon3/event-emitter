@@ -9,17 +9,19 @@ const Event = {
 
 const eventEmitter = new EventEmitter();
 
-const cb = (nextEvent) => (currentEvent) => {
-  console.log(currentEvent);
+const cb = (nextEvent) => (data) => {
+  console.log(data);
 
   setTimeout(() => {
-    eventEmitter.emit(nextEvent);
+    const nextEventData = nextEvent;
+    eventEmitter.emit(nextEvent, nextEventData);
   }, 1000);
 };
 
-eventEmitter.on(Event.STEP_1, cb(Event.STEP_2));
-eventEmitter.on(Event.STEP_2, cb(Event.STEP_3));
-eventEmitter.on(Event.STEP_3, cb(Event.DONE));
-eventEmitter.on(Event.DONE, console.log);
+eventEmitter.subscribe(Event.STEP_1, cb(Event.STEP_2));
+eventEmitter.subscribe(Event.STEP_2, cb(Event.STEP_3));
+eventEmitter.subscribe(Event.STEP_3, cb(Event.DONE));
+eventEmitter.subscribe(Event.DONE, console.log);
 
-eventEmitter.emit(Event.STEP_1);
+const data = Event.STEP_1;
+eventEmitter.emit(Event.STEP_1, data);

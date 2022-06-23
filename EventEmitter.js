@@ -1,17 +1,31 @@
 class EventEmitter {
   constructor() {
-    this.subscribers = []; // type Array<{ event, cb }>
+    this.callbacksMapping = {}; // Record<eventName, cb[]>
   }
 
-  on(event, cb) {
-    this.subscribers.push({ event, cb });
+  subscribe(event, cb) {
+    if (!this.callbacksMapping[event]) {
+      this.callbacksMapping[event] = [];
+    }
+
+    this.callbacksMapping[event].push(cb);
   }
 
-  emit(event) {
-    const subscribers = this.subscribers.filter(subscriber => subscriber.event === event);
-    subscribers.forEach(({ event, cb }) => {
-      cb(event);
-    });
+  unsubscribe(event, cb) {
+    if (!this.callbacksMapping[event]) {
+      return;
+    }
+    const callbacks = this.callbacksMapping[event];
+    this.callbacksMapping[event] = callbacks.filter(callback => callback !== cb);
+  }
+
+  emit(event, data) {
+    if (!this.callbacksMapping[event]) {
+      this.callbacksMapping[event] = [];
+    }
+
+    const callbacks = this.callbacksMapping[event];
+    callbacks.forEach(cb => cb(data));
   }
 }
 
