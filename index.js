@@ -1,4 +1,5 @@
 const { EventEmitter } = require('./EventEmitter');
+const { createEventEmitter } = require('./event-emitter');
 
 const Event = {
   STEP_1: 'step_1',
@@ -7,21 +8,29 @@ const Event = {
   DONE: 'done',
 };
 
-const eventEmitter = new EventEmitter();
+const run = (eventEmitter) => {
+  const cb = (nextEvent) => (data) => {
+    console.log(data);
 
-const cb = (nextEvent) => (data) => {
-  console.log(data);
+    setTimeout(() => {
+      const nextEventData = nextEvent;
+      eventEmitter.emit(nextEvent, nextEventData);
+    }, 1000);
+  };
 
-  setTimeout(() => {
-    const nextEventData = nextEvent;
-    eventEmitter.emit(nextEvent, nextEventData);
-  }, 1000);
+  eventEmitter.subscribe(Event.STEP_1, cb(Event.STEP_2));
+  eventEmitter.subscribe(Event.STEP_2, cb(Event.STEP_3));
+  eventEmitter.subscribe(Event.STEP_3, cb(Event.DONE));
+  eventEmitter.subscribe(Event.DONE, console.log);
+
+  const data = Event.STEP_1;
+  eventEmitter.emit(Event.STEP_1, data);
 };
 
-eventEmitter.subscribe(Event.STEP_1, cb(Event.STEP_2));
-eventEmitter.subscribe(Event.STEP_2, cb(Event.STEP_3));
-eventEmitter.subscribe(Event.STEP_3, cb(Event.DONE));
-eventEmitter.subscribe(Event.DONE, console.log);
+const onClassEventEmitter = new EventEmitter();
+const onFuncsEventEmitter = createEventEmitter();
 
-const data = Event.STEP_1;
-eventEmitter.emit(Event.STEP_1, data);
+run(onClassEventEmitter);
+onClassEventEmitter.subscribe(Event.DONE, () => {
+  run(onFuncsEventEmitter);
+});
